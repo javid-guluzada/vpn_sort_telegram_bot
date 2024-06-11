@@ -1,0 +1,7 @@
+api_keys.json
+log.txt
+*.session
+*.session-journal
+config.env
+__pycache__
+
