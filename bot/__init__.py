@@ -3,7 +3,6 @@ from logging import INFO, FileHandler, StreamHandler, basicConfig, getLogger
 from os import getenv, remove
 
 from dotenv import load_dotenv
-from requests import get
 from bot.utils.helpers.vpns import get_countries
 
 
@@ -15,7 +14,7 @@ basicConfig(
     level=INFO,
 )
 
-LOGGER = getLogger("Subtitle Bot")
+LOGGER = getLogger("Vpn Sort Bot")
 load_dotenv("config.env", override=True)
 try:
     API_ID = int(getenv("API_ID"))

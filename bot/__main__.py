@@ -1,5 +1,4 @@
 from pyrogram import Client, __version__, enums
-from pyrogram.methods.utilities.idle import idle
 from pyrogram.raw.all import layer
 
 from bot import API_HASH, API_ID, BOT_TOKEN, LOGGER
