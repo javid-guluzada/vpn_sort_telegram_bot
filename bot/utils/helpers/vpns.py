@@ -39,6 +39,7 @@ def get_vpn_types():
 
 
 def get_countries(url: str):
+    log.info(f"Fetching countries for {url}")
     response = requests.get(url)
     soup = bs(response.text, "html.parser")
     countries_a = soup.find_all("a", class_="btn btn-primary py-3")

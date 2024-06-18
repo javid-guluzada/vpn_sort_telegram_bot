@@ -1,6 +1,6 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message
-from bot import VPN_TYPES
+from bot import VPN_TYPES, BOT_USERNAME
 from bot.utils.helpers.vpns import get_servers
 from bot.utils.helpers.formatters import speed_format_reverse, format_vpn_name
 from bot.utils.helpers.flags import get_flag
@@ -22,7 +22,7 @@ async def get_vpns(c: Client, m: Message):
 
 @Client.on_message(filters.regex("^/get_countries"))
 async def get_countries(c: Client, m: Message):
-    text = m.text.replace("@testbot12673_bot", "").strip()
+    text = m.text.replace(BOT_USERNAME, "").strip()
     try:
         _, _, vpn_id = text.split("_")
     except ValueError:
@@ -41,7 +41,7 @@ async def get_countries(c: Client, m: Message):
 
 @Client.on_message(filters.regex(r"^/get_"))
 async def get_servers_s(c: Client, m: Message):
-    text = m.text.replace("@testbot12673_bot", "").strip()
+    text = m.text.replace(BOT_USERNAME, "").strip()
     try:
         _, vpn_id, country_id = text.split("_")
     except ValueError:
@@ -60,8 +60,6 @@ async def get_servers_s(c: Client, m: Message):
         return await m.reply_text("Invalid country id")
 
     message = await m.reply_text(f"Fetching servers for {country['name']}...")
-
-    log.info(f"Fetching servers for {country['name']}...")
 
     servers = await get_servers(country["url"])
     msg = ""

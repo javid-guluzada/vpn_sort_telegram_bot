@@ -35,7 +35,7 @@ if not all([API_ID, API_HASH, BOT_TOKEN, OWNER_ID]):
     LOGGER.error("One or more env variables missing exiting now!")
     exit(1)
 
-BOT_USERNAME = ""
+BOT_USERNAME = getenv("BOT_USERNAME")
 
 ADMINS = set()
 if getenv("ADMINS"):
