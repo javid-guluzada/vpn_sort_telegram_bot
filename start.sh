@@ -1,2 +1,2 @@
 #!/bin/bash
-python -m bot
+python3.9 -m bot
