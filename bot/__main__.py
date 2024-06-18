@@ -1,7 +1,7 @@
 from pyrogram import Client, __version__, enums
 from pyrogram.raw.all import layer
 
-from bot import API_HASH, API_ID, BOT_TOKEN, LOGGER
+from bot import API_HASH, API_ID, BOT_TOKEN, LOGGER, BOT_USERNAME
 
 
 class Bot(Client):
@@ -19,7 +19,10 @@ class Bot(Client):
     async def start(self):
         await super().start()
         me = await self.get_me()
-        LOGGER.info(f"@{me.username}  started. Pyrogram v{__version__} (Layer {layer})")
+        BOT_USERNAME = me.username
+        LOGGER.info(
+            f"@{BOT_USERNAME}  started. Pyrogram v{__version__} (Layer {layer})"
+        )
 
     async def stop(self, *args):
         await super().stop()

@@ -1,21 +1,42 @@
-from pyrogram import Client, filters, enums
+from pyrogram import Client, filters
 from pyrogram.types import Message
-from bot import COUNTRIES
+from bot import VPN_TYPES
 from bot.utils.helpers.vpns import get_servers
+from bot.utils.helpers.formatters import speed_format_reverse, format_vpn_name
+from bot.utils.helpers.flags import get_flag
 import logging
 
 log = logging.getLogger(__name__)
 
 
-@Client.on_message(filters.command("get_countries"))
-async def get_countries(c: Client, m: Message):
-    countries = "\n".join(
+@Client.on_message(filters.command("get_vpns"))
+async def get_vpns(c: Client, m: Message):
+    msg = "\n".join(
         [
-            f"{country['id']}. {country['name']}\n/get_3_{country['id']}"
-            for country in COUNTRIES
+            f"{vpn['id']}. {vpn['name']} - /get_countries_{vpn['id']}"
+            for vpn in VPN_TYPES
         ]
     )
-    await m.reply_text(countries)
+    await m.reply_text(msg)
+
+
+@Client.on_message(filters.regex("^/get_countries"))
+async def get_countries(c: Client, m: Message):
+    text = m.text.replace("@testbot12673_bot", "").strip()
+    try:
+        _, _, vpn_id = text.split("_")
+    except ValueError:
+        return await m.reply_text("Invalid command format")
+    vpn_id = int(vpn_id)
+    if vpn_id > len(VPN_TYPES) or vpn_id < 1:
+        return await m.reply_text("Invalid vpn id")
+    msg = "\n".join(
+        [
+            f"{country['id']}. {get_flag(format_vpn_name(country['name']))} {country['name']} - /get_{vpn_id}_{country['id']}"
+            for country in VPN_TYPES[vpn_id - 1]["countries"]
+        ]
+    )
+    await m.reply_text(msg)
 
 
 @Client.on_message(filters.regex(r"^/get_"))
@@ -28,19 +49,28 @@ async def get_servers_s(c: Client, m: Message):
     country_id = int(country_id)
     vpn_id = int(vpn_id)  # it will be used later
     country = next(
-        (country for country in COUNTRIES if country["id"] == country_id), None
+        (
+            country
+            for country in VPN_TYPES[vpn_id - 1]["countries"]
+            if country["id"] == country_id
+        ),
+        None,
     )
+    if not country:
+        return await m.reply_text("Invalid country id")
+
     message = await m.reply_text(f"Fetching servers for {country['name']}...")
 
     log.info(f"Fetching servers for {country['name']}...")
 
     servers = await get_servers(country["url"])
-    new_message_text = ""
+    msg = ""
     for i, server in enumerate(servers):
         isAviable = "Yes" if server["aviable"] == "Available" else "No"
-        new_message_text += f"{i+1}. [{server['name']}]({server['link']}) - {server['speed']} Mbit/s\nActive days - {server['activeDays']}, Aviable: {isAviable}\n"
+        speed_text = speed_format_reverse(server["speed"])
+        msg += f"{i+1}. <a href='{server['link']}'>{server['name']}</a>\n<b>Speed</b> - {speed_text}\n<b>Active days</b> - {server['activeDays']} | <b>Aviable:</b> - {isAviable}\n\n"
+
     await message.edit(
-        new_message_text,
-        parse_mode=enums.ParseMode.MARKDOWN,
+        msg,
         disable_web_page_preview=True,
     )

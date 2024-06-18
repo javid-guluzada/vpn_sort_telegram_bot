@@ -1,12 +1,13 @@
-import json
 from logging import INFO, FileHandler, StreamHandler, basicConfig, getLogger
-from os import getenv, remove
+from os import getenv, remove, path
 
 from dotenv import load_dotenv
-from bot.utils.helpers.vpns import get_countries
+from bot.utils.helpers.vpns import get_vpn_types
+from bot.utils.database.database import db
 
 
-# remove("log.txt")
+if path.exists("log.txt"):
+    remove("log.txt")
 
 basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -34,15 +35,15 @@ if not all([API_ID, API_HASH, BOT_TOKEN, OWNER_ID]):
     LOGGER.error("One or more env variables missing exiting now!")
     exit(1)
 
+BOT_USERNAME = ""
 
 ADMINS = set()
-AUTH_CHATS = set()
+if getenv("ADMINS"):
+    for admin in getenv("ADMINS").split(" "):
+        ADMINS.add(int(admin))
 
-admins = getenv("ADMINS")
-auth_chats = getenv("AUTH_CHATS")
+for admin in db.get_admins():
+    ADMINS.add(admin[0])
 
-COUNTRIES = []
 
-countries = get_countries()
-for country in countries:
-    COUNTRIES.append(country)
+VPN_TYPES = get_vpn_types()
