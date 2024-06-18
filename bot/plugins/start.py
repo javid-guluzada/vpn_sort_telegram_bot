@@ -3,7 +3,7 @@ from pyrogram.types import Message
 from bot.utils.helpers.authorize import authorize_admin
 
 HELP_TEXT = """
-I'm a bot that sorts vpn servers based on country and speed
+I'm a bot that sorts vpn servers based on country and speed.
 
 type /get_vpns to get started
 """
@@ -15,10 +15,16 @@ ADMIN_HELP_TEXT = """
 /log - Get the log file
 """
 
+START_TEXT = """
+Hi {}, I'm vpn sort bot.
+
+type /get_vpns to get started
+"""
+
 
 @Client.on_message(filters.command("start"))
 async def start(c: Client, m: Message):
-    await m.reply_text(f"Hi {m.from_user.mention}, I'm vpn sort bot")
+    await m.reply_text(START_TEXT.format(m.from_user.mention))
 
 
 @Client.on_message(filters.command("help"))
